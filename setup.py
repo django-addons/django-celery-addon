@@ -34,21 +34,22 @@ def get_version(relpath):
 
 
 setup(
-    name="aldryn-celery",
-    version=get_version('aldryn_celery/__init__.py'),
-    description='An opinionated Celery setup bundled as an Aldryn Addon. To be used together with aldryn-django.',
+    name="django-celery-addon",
+    version=get_version('django_celery_addon/__init__.py'),
+    description='An opinionated Celery setup bundled as an Django Addon..',
     author='Divio AG',
     author_email='info@divio.ch',
-    url='https://github.com/aldryn/aldryn-celery',
+    url='https://github.com/stefanfoulis/django-celery-addon',
     packages=find_packages(),
+    python_requires='>=3.6',
     install_requires=(
-        'aldryn-django',
-        'django-celery',
-        'celery==3.1.25',
+        # 'django-addon',
+        # 'django-celery',
+        'celery==4.1.0',
     ),
     entry_points='''
         [console_scripts]
-        aldryn-celery=aldryn_celery.cli:main
+        django-celery-addon=django_celery_addon.cli:main
     ''',
     include_package_data=True,
     zip_safe=False,
