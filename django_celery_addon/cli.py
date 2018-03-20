@@ -1,16 +1,13 @@
-#-*- coding: utf-8 -*-
-from __future__ import absolute_import
 import click
 import os
 import sys
 from django.conf import settings as django_settings
+from django_addons.exceptions import ImproperlyConfigured
 
 
 # add the current directory to pythonpath. So the project files can be read.
-from django.core.exceptions import ImproperlyConfigured
-
-BASE_DIR = os.getcwd()
-sys.path.insert(0, BASE_DIR)
+# BASE_DIR = os.getcwd()
+# sys.path.insert(0, BASE_DIR)
 
 
 @click.command()
@@ -44,11 +41,11 @@ def beat(ctx_obj):
 @click.option('--verbose', is_flag=True)
 @click.pass_context
 def main(ctx, verbose):
-    if not os.path.exists(os.path.join(BASE_DIR, 'manage.py')):
-        raise click.UsageError('make sure you are in the same directory as manage.py')
+    # if not os.path.exists(os.path.join(BASE_DIR, 'manage.py')):
+    #     raise click.UsageError('make sure you are in the same directory as manage.py')
 
-    from aldryn_django import startup
-    startup._setup(BASE_DIR)
+    from django_addon import startup
+    startup._setup()
 
     ctx.obj = {
         'settings': {key: getattr(django_settings, key) for key in dir(django_settings)}
@@ -71,7 +68,7 @@ def execute(args, script=None):
 def start_worker_command(settings):
     cmd = [
         'celery',
-        '--app=aldryn_celery',
+        '--app=django_celery_addon',
         'worker',
     ]
     if settings['CELERY_OPTIMIZATION_PROFILE']:
@@ -82,7 +79,7 @@ def start_worker_command(settings):
 def start_cam_command(settings):
     return [
         'celery',
-        '--app=aldryn_celery',
+        '--app=django_celery_addon',
         'events',
         '--camera={}'.format(settings['CELERY_CAM_CLASS']),
         '--frequency={}'.format(settings['CELERY_CAM_FREQUENCY']),
@@ -93,7 +90,7 @@ def start_cam_command(settings):
 def start_beat_command(settings):
     return [
         'celery',
-        '--app=aldryn_celery',
+        '--app=django_celery_addon',
         'beat',
         '--pidfile=',
     ]

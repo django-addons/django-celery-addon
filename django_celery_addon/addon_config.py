@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from functools import partial
-from aldryn_client import forms
 
 
-class Form(forms.BaseForm):
-
-    def to_settings(self, data, settings):
-        from aldryn_addons.utils import djsenv
+class Load(object):
+    def __call__(self, formdata, settings):
+        from django_addons.utils import djsenv
         s = settings
         env = partial(djsenv, settings=settings)
 
@@ -14,11 +12,15 @@ class Form(forms.BaseForm):
         s['ENABLE_CELERY'] = env('ENABLE_CELERY', bool(s['BROKER_URL']))
         if not s['ENABLE_CELERY']:
             return settings
-        s['INSTALLED_APPS'].append('djcelery')
-        # aldryn_celery must be after djcelery so it can manipulate its admin
-        s['INSTALLED_APPS'].append('aldryn_celery')
-        s['CELERYBEAT_SCHEDULER'] = env('CELERYBEAT_SCHEDULER', 'djcelery.schedulers.DatabaseScheduler')
-        s['CELERY_RESULT_BACKEND'] = env('CELERY_RESULT_BACKEND', 'djcelery.backends.database:DatabaseBackend')
+        s['INSTALLED_APPS'].append('django_celery_addon')
+
+        # http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html#django-celery-beat-database-backed-periodic-tasks-with-admin-interface
+        s['INSTALLED_APPS'].append('django_celery_beat')
+        s['CELERYBEAT_SCHEDULER'] = env('CELERYBEAT_SCHEDULER', 'django_celery_beat.schedulers:DatabaseScheduler')
+
+        # http://docs.celeryproject.org/en/latest/django/first-steps-with-django.html# django-celery-results-using-the-django-orm-cache-as-a-result-backend
+        s['INSTALLED_APPS'].append('django_celery_results')
+        s['CELERY_RESULT_BACKEND'] = env('CELERY_RESULT_BACKEND', 'django-db')
 
         s['CELERY_TASK_RESULT_EXPIRES'] = env('CELERY_TASK_RESULT_EXPIRES', 5*60*60)
         s['CELERY_ACCEPT_CONTENT'] = env('CELERY_ACCEPT_CONTENT', ['json'])
@@ -54,7 +56,7 @@ class Form(forms.BaseForm):
         s['CELERYD_CONCURRENCY'] = env('CELERYD_CONCURRENCY', '2')
         s['CELERY_SEND_EVENTS'] = env('CELERY_SEND_EVENTS', True)
 
-        s['CELERY_CAM_CLASS'] = env('CELERY_CAM_CLASS', 'djcelery.snapshot.Camera')
+        s['CELERY_CAM_CLASS'] = env('CELERY_CAM_CLASS', '')
         s['CELERY_CAM_FREQUENCY'] = env('CELERY_CAM_FREQUENCY', 10)
 
         # celery uses CELERY_ENABLE_UTC=True as default and djcelery (and thus
@@ -68,4 +70,6 @@ class Form(forms.BaseForm):
             'handlers': ['console'],
             'level': 'DEBUG',
         }
-        return s
+
+
+load = Load()

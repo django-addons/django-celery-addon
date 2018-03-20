@@ -46,6 +46,8 @@ setup(
         # 'django-addon',
         # 'django-celery',
         'celery==4.1.0',
+        'django-celery-beat',
+        'django-celery-results',
     ),
     entry_points='''
         [console_scripts]
