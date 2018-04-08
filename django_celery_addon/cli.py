@@ -1,6 +1,5 @@
 import click
 import os
-import sys
 from django.conf import settings as django_settings
 from django_addons.exceptions import ImproperlyConfigured
 
