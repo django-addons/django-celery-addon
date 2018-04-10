@@ -32,7 +32,6 @@ def get_version(relpath):
                 return line.split("'")[1]
 
 
-
 setup(
     name="django-celery-addon",
     version=get_version('django_celery_addon/__init__.py'),
@@ -55,7 +54,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     classifiers=[
-        'License :: OSI Approved :: BSD License',
-        'Framework :: Django',
-    ]
+        'Development Status :: 2 - Pre-Alpha',
+        'Programming Language :: Python :: 3.6',
+        'Framework :: Django :: 2.0',
+    ],
 )
